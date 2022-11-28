@@ -1,5 +1,10 @@
+import { AngularFirestore } from '@angular/fire/compat/firestore'
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/internal/Observable';
 import { Student } from "../models/student";
+import firebase from 'firebase/compat/app';
+
+//import {map} from 'rjxs/operators/@angular';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +13,9 @@ export class StudentService {
 
   private students: Student[];
 
-  constructor() {
+  constructor(
+    private firestore: AngularFirestore,
+  ) {
     this.students = [
       {
         controlnumber: "02400391",
@@ -19,7 +26,7 @@ export class StudentService {
         name: "Israel Arjona Vizcaíno",
         nip: 717,
         photo: 'https://picsum.photos/600/?random=1'
-      }, 
+      },
       {
         controlnumber: "12400391",
         age: 28,
@@ -43,25 +50,22 @@ export class StudentService {
     ];
   }
 
-  public getStudents(): Student[]{
-    return this.students;
+  public getStudents():Observable<firebase.firestore.QuerySnapshot<Student>>{
+    const col = this.firestore.collection<Student>('students');
+    return col.get()
   }
 
   public removeStudent(pos: number): Student[]{
     this.students.splice(pos, 1);
     return this.students;
   }
-
-  public getStudentByControlNumber(controlnumber: string): Student {
-    let item: Student = this.students.find((student)=> {
-      return student.controlnumber===controlnumber;
-    });
-    return item;
+//Puej no se puede por campo xD
+  public getStudentByControlNumber(id: string): Observable<firebase.firestore.DocumentSnapshot<Student>> {
+    return this.firestore.collection<Student>('students').doc(id).get()
   }
 
-  public newStudent(student: Student): Student[] {
-    this.students.push(student);
-    return this.students;
+  public newStudent(student: Student) {
+    return this.firestore.collection<Student>('students').add(student)
   }
 
 }

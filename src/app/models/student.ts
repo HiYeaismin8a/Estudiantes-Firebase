@@ -7,4 +7,6 @@ export class Student {
     email: string;
     career: string;
     photo: string;
+    id?: string; //no nos va a dejar crear ninguno si el objeto no tiene id, a verts
+
 }

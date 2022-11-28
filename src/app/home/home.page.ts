@@ -1,10 +1,9 @@
+import { AlertController } from '@ionic/angular';
 import { Component } from '@angular/core';
-
-import { Student } from "../models/student";
-import { StudentService } from "../services/student.service";
-import { AlertController } from "@ionic/angular";
+import { DocumentData } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-
+import { Student } from '../models/student';
+import { StudentService } from '../services/student.service';
 
 @Component({
   selector: 'app-home',
@@ -12,12 +11,21 @@ import { Router } from '@angular/router';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  public students: Student[] = [];
 
-  public students: Student[];
-
-  constructor(private studentService: StudentService, private alertController: AlertController, private router: Router) {
-    this.students = this.studentService.getStudents();
-
+  constructor(
+    private studentService: StudentService,
+    private alertController: AlertController,
+    private router: Router
+  ) {
+    //this.students = this.studentService.getStudents();
+    this.studentService.getStudents().subscribe((res) => {
+      res.docs.forEach((student) => {
+        const data = student.data();
+        data.id = student.id;
+        this.students.push(data);
+      });
+    });
   }
 
   public async removeStudent(pos: number) {
@@ -29,35 +37,27 @@ export class HomePage {
         {
           text: 'Cancelar',
           role: 'cancel',
-          handler: () => {
-
-          }
+          handler: () => {},
         },
         {
           text: 'Aceptar',
           role: 'confirm',
           handler: () => {
             this.students = this.studentService.removeStudent(pos);
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();
-
-
-
   }
 
-  public getStudentByControlNumber(cn: string): void {
-    //console.log(this.studentService.getStudentByControlNumber(cn));
-    this.router.navigate(['/view-student'], {
-      queryParams: { cn: cn },
-    });
+  public getStudentByControlNumber(id: string): void {
+    console.log(id);
+    this.router.navigate(['/', 'view-student', id]);
   }
 
   public goToNewStudent(): void {
     this.router.navigate(['/new-student']);
   }
-
 }
