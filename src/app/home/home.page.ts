@@ -20,9 +20,10 @@ export class HomePage {
   ) {
     //this.students = this.studentService.getStudents();
     this.studentService.getStudents().subscribe((res) => {
-      res.docs.forEach((student) => {
-        const data = student.data();
-        data.id = student.id;
+      this.students = [];
+      res.forEach((student) => {
+        const data = student.payload.doc.data();
+        data.id = student.payload.doc.id;
         this.students.push(data);
       });
     });

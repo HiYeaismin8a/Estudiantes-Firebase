@@ -15,9 +15,9 @@ export class StudentService {
     private firestore: AngularFirestore,
   ) {  }
 
-  public getStudents():Observable<firebase.firestore.QuerySnapshot<Student>>{
+  public getStudents(){
     const col = this.firestore.collection<Student>('students');
-    return col.get()
+    return col.snapshotChanges()
   }
 
   public removeStudent(id: string){
