@@ -28,7 +28,7 @@ export class HomePage {
     });
   }
 
-  public async removeStudent(pos: number) {
+  public async removeStudent(id: string) {
     const alert = await this.alertController.create({
       header: 'Confirmación',
       subHeader: '¿Estás seguro que deseas eliminar?',
@@ -43,7 +43,10 @@ export class HomePage {
           text: 'Aceptar',
           role: 'confirm',
           handler: () => {
-            this.students = this.studentService.removeStudent(pos);
+            this.studentService
+              .removeStudent(id)
+              .then()
+              .catch((e) => console.log(e));
           },
         },
       ],
